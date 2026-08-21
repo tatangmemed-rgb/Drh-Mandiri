@@ -4,7 +4,12 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'download/**'
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -16,6 +21,7 @@ jobs:
 
       - name: Extract source
         run: unzip -o app.zip
+
       - name: Fix Android package
         run: sed -i 's/id\.drhmandiri\.apq/id.drhmandiri.app/g' app/src/main/AndroidManifest.xml
 
@@ -37,11 +43,23 @@ jobs:
       - name: Build APK
         run: gradle :app:assembleDebug --stacktrace
 
-      - name: Prepare APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk Drh-Mandiri.apk
+      - name: Prepare download files
+        run: |
+          mkdir -p download
+          cp app/build/outputs/apk/debug/app-debug.apk download/Drh-Mandiri.apk
+          cd download
+          zip -j Drh-Mandiri-APK.zip Drh-Mandiri.apk
 
-      - name: Upload APK
+      - name: Save APK to repository
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add download/Drh-Mandiri.apk download/Drh-Mandiri-APK.zip
+          git diff --cached --quiet || git commit -m "Update APK download"
+          git push
+
+      - name: Upload APK artifact backup
         uses: actions/upload-artifact@v4
         with:
           name: Drh-Mandiri-APK
-          path: Drh-Mandiri.apk
+          path: download/
