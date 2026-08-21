@@ -19,9 +19,9 @@ jobs:
 
       - name: Enable AndroidX
         run: |
-          echo "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8" > DrhMandiri/gradle.properties
-          echo "android.useAndroidX=true" >> DrhMandiri/gradle.properties
-          echo "android.enableJetifier=true" >> DrhMandiri/gradle.properties
+          echo "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8" > gradle.properties
+          echo "android.useAndroidX=true" >> gradle.properties
+          echo "android.enableJetifier=true" >> gradle.properties
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -33,11 +33,10 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Build APK
-        working-directory: DrhMandiri
-        run: gradle assembleDebug --stacktrace
+        run: gradle :app:assembleDebug --stacktrace
 
       - name: Prepare APK
-        run: cp DrhMandiri/app/build/outputs/apk/debug/app-debug.apk Drh-Mandiri.apk
+        run: cp app/build/outputs/apk/debug/app-debug.apk Drh-Mandiri.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
