@@ -1,10 +1,10 @@
 name: Build Drh Mandiri APK
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build:
@@ -15,29 +15,26 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Extract source
-              - name: Enable AndroidX in source project
+        run: unzip -o app.zip
+
+      - name: Enable AndroidX
         run: |
-          cat > DrhMandiri/gradle.properties <<'EOF'
-          org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8
-          android.useAndroidX=true
-          android.enableJetifier=true
-          EOF
-          cat DrhMandiri/gradle.properties
+          echo "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8" > DrhMandiri/gradle.properties
+          echo "android.useAndroidX=true" >> DrhMandiri/gradle.properties
+          echo "android.enableJetifier=true" >> DrhMandiri/gradle.properties
 
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.9'
 
       - name: Build APK
         working-directory: DrhMandiri
-        run: gradle :app:assembleDebug --stacktrace
+        run: gradle assembleDebug --stacktrace
 
       - name: Prepare APK
         run: cp DrhMandiri/app/build/outputs/apk/debug/app-debug.apk Drh-Mandiri.apk
