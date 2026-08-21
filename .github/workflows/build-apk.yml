@@ -16,6 +16,8 @@ jobs:
 
       - name: Extract source
         run: unzip -o app.zip
+      - name: Fix Android package
+        run: sed -i 's/id\.drhmandiri\.apq/id.drhmandiri.app/g' app/src/main/AndroidManifest.xml
 
       - name: Enable AndroidX
         run: |
