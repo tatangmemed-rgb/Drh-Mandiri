@@ -14,8 +14,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Extract app source
-        run: unzip -o app.zip
+      - name: Extract source
+        run: |
+          unzip -o Drh-Mandiri-Android-Source*.zip
+          ls -la
+          ls -la DrhMandiri
 
       - name: Set up Java
         uses: actions/setup-java@v4
@@ -29,10 +32,11 @@ jobs:
           gradle-version: '8.9'
 
       - name: Build APK
+        working-directory: DrhMandiri
         run: gradle :app:assembleDebug --stacktrace
 
       - name: Prepare APK
-        run: cp app/build/outputs/apk/debug/app-debug.apk Drh-Mandiri.apk
+        run: cp DrhMandiri/app/build/outputs/apk/debug/app-debug.apk Drh-Mandiri.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
